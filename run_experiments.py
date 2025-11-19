@@ -32,7 +32,7 @@ def main():
 
     if args.technique_type == "rag":
         output_file_path = os.path.join(args.output_folder, f"rag_results_{args.chunk_size}_k{args.num_chunks}.json")
-        rag_manager = RAGManager(data_path="dataset/locomo10_qa_name.json", chunk_size=args.chunk_size, k=args.num_chunks, True)
+        rag_manager = RAGManager(data_path="dataset/locomo10_qa_name.json", chunk_size=args.chunk_size, k=args.num_chunks, on_dgx=True)
         rag_manager.process_all_conversations(output_file_path)
     else:
         raise ValueError(f"Invalid technique type: {args.technique_type}")
