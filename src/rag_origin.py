@@ -53,7 +53,71 @@ class RAGManager:
         self.chunk_size = chunk_size
         self.k = k
 
-    def generate_response(self, question, context):
+    def generate_response(self, question, context, qnum):
+        template = Template(PROMPT)
+        prompt = template.render(CONTEXT=context, QUESTION=question, QUESTIONREMIND=question, QNUM=qnum)
+
+        max_retries = 3
+        retries = 0
+
+        while retries <= max_retries:
+            try:
+                t1 = time.time()
+                #response = self.client.chat.completions.create(
+                stream =    self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": "You are a helpful assistant that can answer "
+                            "questions based on the provided context."
+                            "If the question involves timing, use the conversation date for reference."
+                            "Provide the shortest possible answer."
+                            "Use words directly from the conversation when possible."
+                            "Avoid using subjects in your answer.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    # temperature=0,
+                    stream=True,
+                    stream_options={"include_usage": True},
+                )
+
+                t_first = None  # 첫 토큰까지 걸린 시간
+                gaps = deque()  # 토큰‑간 간격(초)
+                t_prev = None
+                answer_parts = []
+                usage = None  # 마지막 청크에서 채워짐
+
+                for chunk in stream:
+                    if chunk.choices and chunk.choices[0].delta.content:
+                        answer_parts.append(chunk.choices[0].delta.content)
+
+                    now = time.time()
+
+                    if t_first is None:  # 첫 루프 → t_first
+                        t_first = now - t1
+                    elif t_prev is not None:  # 두 번째 토큰부터는 간격 기록
+                        gaps.append(now - t_prev)
+
+                    t_prev = now
+
+                    # usage 정보는 마지막 extra‑chunk에 들어옴
+                    if chunk.usage is not None:
+                        usage = chunk.usage
+
+                t_total = now - t1  # 전체 소요 시간
+                tpot_avg = (sum(gaps) / len(gaps)) if gaps else 0.0
+
+                return "".join(answer_parts).strip(), t_first, tpot_avg, t_total, usage
+
+            except Exception as e:
+                retries += 1
+                if retries > max_retries:
+                    raise e
+                time.sleep(1)  # Wait before retrying
+
+    def generate_response_origin(self, question, context):
         template = Template(PROMPT)
         prompt = template.render(CONTEXT=context, QUESTION=question, QUESTIONREMIND=question)
 
@@ -192,25 +256,50 @@ class RAGManager:
                     search_time = 0
                 else:
                     context, search_time = self.search(question, chunks, embeddings, k=self.k)
-                response, response_time, usage = self.generate_response(question, context)
+                response, time_prefill, time_decode_avg, response_time, usage = self.generate_response(question,
+                                                                                                       context, qnum)
 
                 FINAL_RESULTS[key].append(
                     {
                         "question": question,
                         "answer": answer,
                         "category": category,
-                        #"context": context,
+                        # "context": context,
                         "response": response,
-                        #"search_time": search_time,
+                        # "search_time": search_time,
                         "response_time": response_time,
+                        "prefill_time": time_prefill,
+                        "decode_time_avg": time_decode_avg,
                         "total_tokens": usage.total_tokens,
                         "prompt_tokens": usage.prompt_tokens,
+                        "prompt_cached_tokens": usage.prompt_tokens_details.cached_tokens,  # prompt cache
                         "completion_tokens": usage.completion_tokens,
-                        "completion_reasoning_tokens" : usage.completion_tokens_details.reasoning_tokens,
+                        "completion_reasoning_tokens": usage.completion_tokens_details.reasoning_tokens,
+                        # "completion_accept_tokens" : usage.completion_tokens_details.accepted_prediction_tokens,
+                        # "completion_reject_tokens" : usage.completion_tokens_details.rejected_prediction_tokens,
                     }
                 )
                 with open(output_file_path, "w+") as f:
                     json.dump(FINAL_RESULTS, f, indent=4)
+                # response, response_time, usage = self.generate_response(question, context)
+                #
+                # FINAL_RESULTS[key].append(
+                #     {
+                #         "question": question,
+                #         "answer": answer,
+                #         "category": category,
+                #         #"context": context,
+                #         "response": response,
+                #         #"search_time": search_time,
+                #         "response_time": response_time,
+                #         "total_tokens": usage.total_tokens,
+                #         "prompt_tokens": usage.prompt_tokens,
+                #         "completion_tokens": usage.completion_tokens,
+                #         "completion_reasoning_tokens" : usage.completion_tokens_details.reasoning_tokens,
+                #     }
+                # )
+                # with open(output_file_path, "w+") as f:
+                #     json.dump(FINAL_RESULTS, f, indent=4)
 
         # Save results
         with open(output_file_path, "w+") as f:

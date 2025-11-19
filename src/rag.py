@@ -88,7 +88,7 @@ class RAGManager:
                         },
                         {"role": "user", "content": prompt},
                     ],
-                    #temperature=0,
+                    # temperature=0,
                     stream=True,
                     stream_options={"include_usage": True},
                 )
@@ -184,6 +184,11 @@ class RAGManager:
                 time.sleep(1)  # Wait before retrying
 
     def clean_chat_history(self, chat_history):
+        # cleaned_chat_history = ""
+        # for c in chat_history:
+        #     cleaned_chat_history += f"{c['timestamp']} | {c['speaker']}: {c['text']}\n"
+        #
+        # return cleaned_chat_history
         cleaned_chat_history = ""
         for conv in chat_history:
             #cleaned_chat_history += f"This conversation took place between {conv[0]['speaker']} and {conv[1]['speaker']}.\n[\n"
