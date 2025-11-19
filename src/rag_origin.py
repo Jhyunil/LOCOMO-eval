@@ -121,11 +121,12 @@ class RAGManager:
                     # usage 정보는 마지막 extra‑chunk에 들어옴
                     if chunk.usage is not None:
                         usage = chunk.usage
+                    # print(chunk)
 
                 t_total = now - t1  # 전체 소요 시간
                 tpot_avg = (sum(gaps) / len(gaps)) if gaps else 0.0
 
-                return "".join(answer_parts).strip(), t_first, tpot_avg, t_total, usage
+                return "".join(answer_parts).strip(), t_first, tpot_avg, t_total # , usage
 
             except Exception as e:
                 retries += 1
@@ -284,7 +285,8 @@ class RAGManager:
                     search_time = 0
                 else:
                     context, search_time = self.search(question, chunks, embeddings, k=self.k)
-                response, time_prefill, time_decode_avg, response_time, usage = self.generate_response(question, context, qnum)
+                response, time_prefill, time_decode_avg, response_time = self.generate_response(question, context, qnum)
+                # usage
 
                 FINAL_RESULTS[key].append(
                     {
@@ -297,11 +299,11 @@ class RAGManager:
                         "response_time": response_time,
                         "prefill_time": time_prefill,
                         "decode_time_avg": time_decode_avg,
-                        "total_tokens": usage.total_tokens,
-                        "prompt_tokens": usage.prompt_tokens,
-                        "prompt_cached_tokens": usage.prompt_tokens_details.cached_tokens,  # prompt cache
-                        "completion_tokens": usage.completion_tokens,
-                        "completion_reasoning_tokens": usage.completion_tokens_details.reasoning_tokens,
+                        # "total_tokens": usage.total_tokens,
+                        # "prompt_tokens": usage.prompt_tokens,
+                        # "prompt_cached_tokens": usage.prompt_tokens_details.cached_tokens,  # prompt cache
+                        # "completion_tokens": usage.completion_tokens,
+                        # "completion_reasoning_tokens": usage.completion_tokens_details.reasoning_tokens,
                         # "completion_accept_tokens" : usage.completion_tokens_details.accepted_prediction_tokens,
                         # "completion_reject_tokens" : usage.completion_tokens_details.rejected_prediction_tokens,
                     }
