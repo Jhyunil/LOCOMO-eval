@@ -54,7 +54,7 @@ class RAGManager:
         GPT_OSS_API_KEY = os.getenv("GPT_OSS_API_KEY", "EMPTY")
         if on_dgx:
             self.client = OpenAI(
-                api_base=GPT_OSS_BASE_URL,
+                base_url=GPT_OSS_BASE_URL,
                 api_key=GPT_OSS_API_KEY, # EMPTY
             )
         else:
