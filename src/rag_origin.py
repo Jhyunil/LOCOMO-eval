@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from collections import deque
 from collections import defaultdict
 
 import numpy as np
@@ -9,6 +10,7 @@ from dotenv import load_dotenv
 from jinja2 import Template
 from openai import OpenAI
 from tqdm import tqdm
+from typing import Dict, Any, List, Set, Tuple
 
 load_dotenv()
 
@@ -46,12 +48,26 @@ PROMPT = """
 # """
 
 class RAGManager:
-    def __init__(self, data_path="dataset/locomo10_qa_test.json", chunk_size=500, k=1):
+    def __init__(self, data_path="dataset/locomo10_qa_test.json", chunk_size=500, k=1, on_dgx=False):
         self.model = os.getenv("MODEL")
-        self.client = OpenAI()
+        GPT_OSS_BASE_URL = os.getenv("GPT_OSS_BASE_URL", "http://115.145.179.241:8000/v1")
+        GPT_OSS_API_KEY = os.getenv("GPT_OSS_API_KEY", "EMPTY")
+        if on_dgx:
+            self.client = OpenAI(
+                base_url=GPT_OSS_BASE_URL,
+                api_key=GPT_OSS_API_KEY, # EMPTY
+            )
+        else:
+            self.client = OpenAI()
         self.data_path = data_path
         self.chunk_size = chunk_size
         self.k = k
+    # def __init__(self, data_path="dataset/locomo10_qa_test.json", chunk_size=500, k=1):
+    #     self.model = os.getenv("MODEL")
+    #     self.client = OpenAI()
+    #     self.data_path = data_path
+    #     self.chunk_size = chunk_size
+    #     self.k = k
 
     def generate_response(self, question, context, qnum):
         template = Template(PROMPT)
@@ -246,6 +262,7 @@ class RAGManager:
             #     json.dump({"conv_idx": key, "context": chunks[0]}, f)
             #     f.write("\n")  # 줄 구분
 
+            qnum = 0
             for item in tqdm(questions, desc="Answering questions", leave=False):
                 question = item["question"]
                 answer = item.get("answer", "")
@@ -256,8 +273,7 @@ class RAGManager:
                     search_time = 0
                 else:
                     context, search_time = self.search(question, chunks, embeddings, k=self.k)
-                response, time_prefill, time_decode_avg, response_time, usage = self.generate_response(question,
-                                                                                                       context, qnum)
+                response, time_prefill, time_decode_avg, response_time, usage = self.generate_response(question, context, qnum)
 
                 FINAL_RESULTS[key].append(
                     {
