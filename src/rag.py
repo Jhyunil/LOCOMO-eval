@@ -48,9 +48,17 @@ PROMPT = """
 # """
 
 class RAGManager:
-    def __init__(self, data_path="dataset/locomo10_qa_test.json", chunk_size=500, k=1):
+    def __init__(self, data_path="dataset/locomo10_qa_test.json", chunk_size=500, k=1, on_dgx=False):
         self.model = os.getenv("MODEL")
-        self.client = OpenAI()
+        GPT_OSS_BASE_URL = os.getenv("GPT_OSS_BASE_URL", "http://115.145.179.241:8000/v1")
+        GPT_OSS_API_KEY = os.getenv("GPT_OSS_API_KEY", "EMPTY")
+        if on_dgx:
+            self.client = OpenAI(
+                api_base=GPT_OSS_BASE_URL,
+                api_key=GPT_OSS_API_KEY, # EMPTY
+            )
+        else:
+            self.client = OpenAI()
         self.data_path = data_path
         self.chunk_size = chunk_size
         self.k = k
