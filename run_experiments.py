@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from src.rag import RAGManager
+from src.rag_origin import RAGManager
 from src.utils import METHODS, TECHNIQUES
 
 
