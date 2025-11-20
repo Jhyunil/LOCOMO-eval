@@ -33,6 +33,10 @@ if __name__ == "__main__":
     calculate_decode_time_avg("results/gpt-oss/gpt-oss_4conv_vllm.json")
     print()
 
-    print('1conv input token with GPT-4.1: ')
-    calculate_decode_time_avg("results/full_conv6/qa_result_full_conv8.json")
+    print('1conv input token with vllm: ')
+    calculate_decode_time_avg("results/gpt-oss/gpt-oss_1conv_vllm.json")
+    print()
+
+    print('1conv input token with vllm with prefix cache: ')
+    calculate_decode_time_avg("results/gpt-oss/gpt-oss_1conv_prefix_vllm.json")
     print()

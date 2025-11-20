@@ -65,9 +65,9 @@ def main():
 
     # Use ThreadPoolExecutor with specified workers
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as executor:
-        # futures = [executor.submit(process_item, item_data) for item_data in data.items()]
-        item_data = next(iter(data.items()))  # ('0', [...]) 형태의 첫 번째 item
-        futures = [executor.submit(process_item, item_data)]
+        futures = [executor.submit(process_item, item_data) for item_data in data.items()]
+        # item_data = next(iter(data.items()))  # ('0', [...]) 형태의 첫 번째 item
+        # futures = [executor.submit(process_item, item_data)]
 
 
         for future in tqdm(concurrent.futures.as_completed(futures), total=len(futures)):
