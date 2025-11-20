@@ -24,28 +24,28 @@ load_dotenv()
 # # Short answer:
 # """
 
-PROMPT = """
-# Question:
-{{QUESTION}}
-
-# Context:
-{{CONTEXT}}
-
-# Question Remind:
-{{QUESTIONREMIND}}
-
-# Short answer:
-"""
-
 # PROMPT = """
-# # Context:
-# {{CONTEXT}}
-#
 # # Question:
 # {{QUESTION}}
 #
+# # Context:
+# {{CONTEXT}}
+#
+# # Question Remind:
+# {{QUESTIONREMIND}}
+#
 # # Short answer:
 # """
+
+PROMPT = """
+# Context:
+{{CONTEXT}}
+
+# Question:
+{{QUESTION}}
+
+# Short answer:
+"""
 
 class RAGManager:
     def __init__(self, data_path="dataset/locomo10_qa_test.json", chunk_size=500, k=1, on_dgx=False):
@@ -301,7 +301,7 @@ class RAGManager:
                         "decode_time_avg": time_decode_avg,
                         "total_tokens": usage.total_tokens,
                         "prompt_tokens": usage.prompt_tokens,
-                        # "prompt_cached_tokens": usage.prompt_tokens_details.cached_tokens,  # prompt cache
+                        "prompt_cached_tokens": usage.prompt_tokens_details.cached_tokens,  # prompt cache
                         "completion_tokens": usage.completion_tokens,
                         # "completion_reasoning_tokens": usage.completion_tokens_details.reasoning_tokens,
                         # "completion_accept_tokens" : usage.completion_tokens_details.accepted_prediction_tokens,

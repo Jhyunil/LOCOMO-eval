@@ -5,10 +5,10 @@ import pandas as pd
 
 parser = argparse.ArgumentParser(description="Generate evaluation statistics from results")
 parser.add_argument(
-    "--eval_data", type=str, default="results/evaluation/full_conv5_1.json", help="Path to the eval dataset file"
+    "--eval_data", type=str, default="results/evaluation/gpt-oss/gpt-oss-4conv_vllm.json", help="Path to the eval dataset file"
 )
 parser.add_argument(
-    "--qa_data", type=str, default="results/full_conv5/qa_result_full_conv5_1.json", help="Path to the qa dataset file"
+    "--qa_data", type=str, default="results/gpt-oss/gpt-oss_4conv_vllm.json", help="Path to the qa dataset file"
 )
 parser.add_argument("--max_workers", type=int, default=10, help="Maximum number of worker threads")
 args = parser.parse_args()
@@ -38,8 +38,8 @@ qa_keep_cols = [
     "decode_time_avg",
     "total_tokens",
     "prompt_tokens",
-    "prompt_cached_tokens",
-    "completion_reasoning_tokens",
+    #"prompt_cached_tokens",
+    #"completion_reasoning_tokens",
 ]
 
 df_eval = pd.DataFrame(eval_items)

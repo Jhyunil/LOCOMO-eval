@@ -5,7 +5,7 @@ import pandas as pd
 
 parser = argparse.ArgumentParser(description="Generate evaluation statistics from results")
 parser.add_argument(
-    "--eval_data", type=str, default="results/evaluation/full_conv5_1.json", help="Path to the eval dataset file"
+    "--eval_data", type=str, default="results/evaluation/gpt-oss/conv5.json", help="Path to the eval dataset file"
 )
 parser.add_argument(
     "--qa_data", type=str, default="results/full_conv5/qa_result_full_conv5_1.json", help="Path to the qa dataset file"
@@ -30,7 +30,7 @@ qa_items   = [it for conv in qa_data.values()  for it in conv]
 # DataFrame 생성
 
 df_eval = pd.DataFrame(eval_items)
-df_qa   = pd.DataFrame(qa_items)[["question", "response_time", "total_tokens", "completion_reasoning_tokens"]]
+df_qa   = pd.DataFrame(qa_items)[["question", "response_time", "total_tokens"]] # "completion_reasoning_tokens"]]
 
 dups = (df_eval["question"]
         .value_counts()
@@ -99,7 +99,7 @@ print(result)
 overall = df[group_cols].mean().round(4)
 
 overall["total_tokens_sum"] = int(df["total_tokens"].sum())
-overall["reasoning_tokens_sum"] = int(df["completion_reasoning_tokens"].sum())
+# overall["reasoning_tokens_sum"] = int(df["completion_reasoning_tokens"].sum())
 # 전체 p50 / p95
 overall["response_time_p50"] = round(df["response_time"].median(), 4)
 overall["response_time_p95"] = round(df["response_time"].quantile(0.95), 4)

@@ -5,6 +5,7 @@ def calculate_decode_time_avg(path: str):
         data = json.load(f)
 
     decode_times = []
+    prefill_times = []
 
     # data: {"0": [...], "1": [...], ...}
     for key, item_list in data.items():
@@ -13,14 +14,25 @@ def calculate_decode_time_avg(path: str):
         for item in item_list:
             if "decode_time_avg" in item:
                 decode_times.append(item["decode_time_avg"])
+            if "prefill_time" in item:
+                prefill_times.append(item["prefill_time"])
 
-    if len(decode_times) == 0:
+    if len(decode_times) == 0 or len(prefill_times) == 0:
         print("No decode_time_avg fields found.")
         return
 
-    avg = sum(decode_times) / len(decode_times)
+    decode_avg = sum(decode_times) / len(decode_times)
+    prefill_avg = sum(prefill_times) / len(prefill_times)
     print(f"Total items: {len(decode_times)}")
-    print(f"Average decode_time_avg: {avg:.6f}")
+
+    print(f"Average prefill_time_avg: {prefill_avg:.6f}")
+    print(f"Average decode_time_avg: {decode_avg:.6f}")
 
 if __name__ == "__main__":
-    calculate_decode_time_avg("results/gpt-oss/gpt-oss_8192trt_remote.json")
+    print('4conv input token with vllm: ')
+    calculate_decode_time_avg("results/gpt-oss/gpt-oss_4conv_vllm.json")
+    print()
+
+    print('1conv input token with GPT-4.1: ')
+    calculate_decode_time_avg("results/full_conv6/qa_result_full_conv8.json")
+    print()
