@@ -274,22 +274,28 @@ class RAGManager:
 
         FINAL_RESULTS = defaultdict(list)
         # Full_Conv = defaultdict(list)
-        #k = 0
+        k = 0
+
         chat_history: List[Dict[str, Any]] = []
-        for i in range(10):
-            conv = data[str((i+5)%10)].get("conversation", [])
-            chat_history.append(conv)
+
+        # 10개 대화 모두 합치기
+        # for i in range(10):
+        #     conv = data[str((i+5)%10)].get("conversation", [])
+        #     chat_history.append(conv)
+
         # with open("results/conv_context.jsonl", "w+") as f:
         #     json.dump(chat_history, f, indent=4)
-        #k += 1
+        k += 1
+
         for key, value in tqdm(data.items(), desc="Processing conversations"):
-            # chat_history = value["conversation"]
+            # 4개 대화 합치기
+            chat_history = value["conversation"]
             # concat 4 conversations to object chat_history
-            # chat_history: List[Dict[str, Any]] = []
-            # for i in range(4):
-            #     conv = data[str((k+i-2)%10)].get("conversation", [])
-            #     chat_history.append(conv)
-            # k += 1
+            chat_history: List[Dict[str, Any]] = []
+            for i in range(4):
+                conv = data[str((k+i-2)%10)].get("conversation", [])
+                chat_history.append(conv)
+            k += 1
 
             questions = value["question"]
 

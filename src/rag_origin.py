@@ -224,16 +224,16 @@ class RAGManager:
 
         documents = self.clean_chat_history(chat_history)
 
-        # Encode the document
-        encoding = tiktoken.encoding_for_model(os.getenv("EMBEDDING_MODEL"))
-        tokens = encoding.encode(documents)
-        chunks = []
-        # Split into chunks based on token count
-        for i in range(0, len(tokens), 8192):
-            chunk_tokens = tokens[i: i + chunk_size]
-            chunk = encoding.decode(chunk_tokens)
-            chunks.append(chunk)
-        return chunks[0], []
+        # # Encode the document
+        # encoding = tiktoken.encoding_for_model(os.getenv("EMBEDDING_MODEL"))
+        # tokens = encoding.encode(documents)
+        # chunks = []
+        # # Split into chunks based on token count
+        # for i in range(0, len(tokens), 8192):
+        #     chunk_tokens = tokens[i: i + chunk_size]
+        #     chunk = encoding.decode(chunk_tokens)
+        #     chunks.append(chunk)
+        # return chunks[0], []
 
         if chunk_size == -1:
             return [documents], []
