@@ -126,7 +126,7 @@ class RAGManager:
                 t_total = now - t1  # 전체 소요 시간
                 tpot_avg = (sum(gaps) / len(gaps)) if gaps else 0.0
 
-                return "".join(answer_parts).strip(), t_first, tpot_avg, t_total # , usage
+                return "".join(answer_parts).strip(), t_first, tpot_avg, t_total ,usage
 
             except Exception as e:
                 retries += 1
@@ -285,7 +285,7 @@ class RAGManager:
                     search_time = 0
                 else:
                     context, search_time = self.search(question, chunks, embeddings, k=self.k)
-                response, time_prefill, time_decode_avg, response_time = self.generate_response(question, context, qnum)
+                response, time_prefill, time_decode_avg, response_time, usage = self.generate_response(question, context, qnum)
                 # usage
 
                 FINAL_RESULTS[key].append(
