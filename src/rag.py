@@ -318,19 +318,19 @@ class RAGManager:
                         "question": question,
                         "answer": answer,
                         "category": category,
-                        #"context": context,
+                        # "context": context,
                         "response": response,
-                        #"search_time": search_time,
+                        # "search_time": search_time,
                         "response_time": response_time,
-                        "prefill_time" : time_prefill,
-                        "decode_time_avg" : time_decode_avg,
+                        "prefill_time": time_prefill,
+                        "decode_time_avg": time_decode_avg,
                         "total_tokens": usage.total_tokens,
                         "prompt_tokens": usage.prompt_tokens,
-                        "prompt_cached_tokens" : usage.prompt_tokens_details.cached_tokens, # prompt cache
+                        # "prompt_cached_tokens": usage.prompt_tokens_details.cached_tokens,  # prompt cache
                         "completion_tokens": usage.completion_tokens,
-                        "completion_reasoning_tokens": usage.completion_tokens_details.reasoning_tokens,
-                        #"completion_accept_tokens" : usage.completion_tokens_details.accepted_prediction_tokens,
-                        #"completion_reject_tokens" : usage.completion_tokens_details.rejected_prediction_tokens,
+                        # "completion_reasoning_tokens": usage.completion_tokens_details.reasoning_tokens,
+                        # "completion_accept_tokens" : usage.completion_tokens_details.accepted_prediction_tokens,
+                        # "completion_reject_tokens" : usage.completion_tokens_details.rejected_prediction_tokens,
                     }
                 )
                 with open(output_file_path, "w+") as f:
